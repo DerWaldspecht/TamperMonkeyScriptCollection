@@ -8,7 +8,7 @@
 // ==/UserScript==
 
 // TO - DO
-// Bug fixing (The Website on Justwatch opens with a lef click on one of the icons but a Middle mouse button click works and i have no clue why)
+// Bug fixing (The Website on Justwatch opens with a left click on one of the icons but a Middle mouse button click works and i have no clue why)
 
 (function() {
     'use strict';
