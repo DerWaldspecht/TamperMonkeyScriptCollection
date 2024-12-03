@@ -1,0 +1,69 @@
+// ==UserScript==
+// @name         Auto T-Rex Runner
+// @namespace    http://tampermonkey.net/
+// @version      1.0
+// @description  Automatically plays the Google T-Rex game
+// @author       DerWaldspecht
+// @match        https://trex-runner.com/
+// @grant        none
+// ==/UserScript==
+
+// A Shitty Script which plays the Google Trex Game for you (It's highly inconsistent)
+// After Not so much testing it hit 2144 which is fine. (Remember for me do a proper version you could do this by logging speed and distance to obstacle)
+// For Future me hate me as much as you want i wont do comments
+
+(function() {
+    'use strict';
+
+    function isTRexGame() {
+        return Runner && Runner.instance_;
+    }
+
+    function simulateKeyPress(keyCode) {
+        var event = new KeyboardEvent('keydown', {
+            bubbles: true,
+            cancelable: true,
+            keyCode: keyCode
+        });
+        document.dispatchEvent(event);
+    }
+
+    function gameLoop() {
+        if (isTRexGame()) {
+            var runner = Runner.instance_;
+            if (runner.horizon.obstacles.length > 0) {
+                var obstacle = runner.horizon.obstacles[0];
+                var nextObstacle = runner.horizon.obstacles[1];
+                var speed = runner.currentSpeed;
+                var jumpThreshold = 50 + speed * 10; 
+
+                if (nextObstacle && nextObstacle.xPos - obstacle.xPos < jumpThreshold) {
+                    jumpThreshold = (obstacle.xPos + nextObstacle.xPos) / 2;
+                }
+
+                if (nextObstacle && nextObstacle.xPos - obstacle.xPos < speed * 5) {
+                    jumpThreshold = obstacle.xPos - speed * 5;
+                }
+
+                if (obstacle.yPos < 75) {
+                    if (obstacle.xPos < jumpThreshold && obstacle.yPos < 50) {
+                        simulateKeyPress(38);
+                    }
+                } else {
+                    if (obstacle.xPos < jumpThreshold) {
+                        simulateKeyPress(38);
+                    }
+                }
+
+                if (nextObstacle && nextObstacle.yPos < 75 && obstacle.yPos > 75) {
+                    if (nextObstacle.xPos - obstacle.xPos < speed * 10) {
+                        simulateKeyPress(38);
+                    }
+                }
+            }
+        }
+        requestAnimationFrame(gameLoop);
+    }
+
+    gameLoop();
+})();
